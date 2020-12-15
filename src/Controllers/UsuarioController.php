@@ -35,7 +35,6 @@ class UsuarioController
 
     public function addOne(Request $request, Response $response, $args)
     {
-        
         $body = $request->getParsedBody();
         $user = new Usuario;
         $rta = "";
@@ -52,9 +51,10 @@ class UsuarioController
                 }
             }
 
+
             if ($unique) {
                 $user->tipo = $body['tipo'];
-                var_dump($user->tipo);
+
                 if($user->tipo == 'cervecero' || $user->tipo == 'bartender' || $user->tipo == 'mozo'
                 || $user->tipo == 'socio' || $user->tipo == 'cocinero' || $user->tipo == 'admin' || $user->tipo == 'candy'){
                     $user->email = strtolower($body['email']);
@@ -67,8 +67,6 @@ class UsuarioController
                 } else {
                     $rta = "Tipo invalido.";
                 }
-
-
             } else {
                 $rta = "Nombre o Email repetidos... no se puede registrar.";
             }
@@ -117,7 +115,7 @@ class UsuarioController
     }
 
 
-    //despedir??
+
     public function borrarEmpleado(Request $request, Response $response, $args)
     {
         $body = $request->getParsedBody();

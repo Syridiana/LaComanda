@@ -17,7 +17,8 @@ require __DIR__ . '/../vendor/autoload.php'; // se encarga de incluir todas las 
 
 
 $app = AppFactory::create();
-$app->setBasePath("/TP_COMANDA/public");
+$app->setBasePath("/public");
+$app->addErrorMiddleware(true, false, false);
 new Database;
 
 $app->group('/users', function (RouteCollectorProxy $group) {

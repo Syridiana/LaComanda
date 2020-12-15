@@ -120,7 +120,7 @@ class PedidoController
         return $costoTotal;
     }
 
-    public function preparacion(Request $request, Response $response, $args)
+      public function preparacion(Request $request, Response $response, $args)
     {
         $body = $request->getParsedBody();
 
@@ -129,7 +129,6 @@ class PedidoController
 
        // $sectores = ["socio", "bartender", "cervecero", "cocinero"];
 
-      
         //$pedidoComida = Pedido_Comida::select("*")->where("idEstado", "=", 1)->get()->first();
         $comida = Comida::select("*")->where("tipo", "=", $tipo)->get()->first();
         $comidaId = $comida->id;
@@ -152,6 +151,7 @@ class PedidoController
         //$this->modificarItems($pedidoComida, $rta, $response);
     }
 
+
     public function servirPedido(Request $request, Response $response, $args)
     {
 
@@ -160,15 +160,13 @@ class PedidoController
         $empleado = $body['token']->email;
        // $sectores = ["socio", "bartender", "cervecero", "cocinero", "cocinero"];
 
+
         $idComida = Comida::where("tipo", "=", $tipo)->first()->id;
         $pedidoComida = Pedido_Comida::select("*")->where("idEstado", "=", 3)->where("idComida", "=", $idComida)->get()->first();
         $idEmpleado = Usuario::select("*")->where("tipo", "=", $tipo)->get()->first()->id;
 
-        if ($idEmpleado === $pedidoComida->idEmpleado || $tipo === 'socio') {
-            if ($pedidoComida->idEstado < 2) {
-                $pedidoComida->idEstado++;
-                $pedidoComida->save();
-            }
+        if ($pedidoComida) {
+
             $rta = "Sirviendo " . $tipo;
         } else {
             $rta = "No hay pedidos en listos para servir en tu sector!";
@@ -195,8 +193,8 @@ class PedidoController
         // }
 
         // $response->getBody()->write(json_encode($rta));
-        $response = $this->modificarItems($pedidoComida, $rta, $response);
-        return $this->modificarItems($pedidoComida, $rta, $response);
+        $response->getBody()->write(json_encode($rta));
+        return $response;
     }
 
     private function modificarItems($pedidoComida, $rta, $response)
@@ -245,7 +243,3 @@ class PedidoController
 }
 
 
-
-// else if ($pedidoComida->idEstado === 3) {
-//     $pedido->tiempoRestantePedido = rand(1, 20);
-// }
