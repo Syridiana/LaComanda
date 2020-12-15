@@ -79,10 +79,10 @@ class PedidoController
 
                 $rta = "Nro de Pedido: $nuevoId";
             } else {
-                $rta = "Esa mesa esta ocupada en este momento...";
+                $rta = "Mesa esta ocupada...";
             }
         } else {
-            $rta = "El usuario $tipo no tiene acceso a agregar pedidos...";
+            $rta = "El usuario $tipo no tiene permiso para agregar pedidos...";
             $response->withStatus(401);
         }
 
@@ -90,7 +90,7 @@ class PedidoController
         return $response;
     }
 
-    //El mozo asigna el pedido y retorna el precio total de la lista de productos
+
     private function asignarComidas($body, $nuevoId)
     {
         $costoTotal = 0;
@@ -102,8 +102,7 @@ class PedidoController
             $pedidoComida->idComida = $value->idComida;
             $pedidoComida->idMozo = Usuario::select("id")->where("email", "=", $body['token']->email)->get()->first()->id;
             $comida = Comida::select("*")->where("id", "=", $value->idComida)->get()->first();
-/*             $tipoComida = $comida->tipo;
-            var_dump($comida); */
+
 
             $costoTotal += $comida->precio;
 
@@ -114,7 +113,7 @@ class PedidoController
             $idMozo = Usuario::select("id")->where("email", "=", $emailMozo)->get()->first()->id;
 
             $pedidoComida->idEmpleado = $idMozo;
-            // $pedidoComida->idEmpleado = Usuario::select("*")->where("tipo", "=", $sectores[$comida->tipo])->where("estado", "=", "activo")->get()->first()->idUsuario;
+
             $pedidoComida->save();
         }
         return $costoTotal;
@@ -127,9 +126,7 @@ class PedidoController
         $token = $_SERVER['HTTP_TOKEN'];
         $tipo = AuthJWT::GetDatos($token)->tipo;
 
-       // $sectores = ["socio", "bartender", "cervecero", "cocinero"];
 
-        //$pedidoComida = Pedido_Comida::select("*")->where("idEstado", "=", 1)->get()->first();
         $comida = Comida::select("*")->where("tipo", "=", $tipo)->get()->first();
         $comidaId = $comida->id;
 
@@ -148,7 +145,7 @@ class PedidoController
         }
         $response->getBody()->write(json_encode($rta));
         return $response;
-        //$this->modificarItems($pedidoComida, $rta, $response);
+
     }
 
 
@@ -158,7 +155,7 @@ class PedidoController
         $body = $request->getParsedBody();
         $tipo = $body['token']->tipo;
         $empleado = $body['token']->email;
-       // $sectores = ["socio", "bartender", "cervecero", "cocinero", "cocinero"];
+
 
 
         $idComida = Comida::where("tipo", "=", $tipo)->first()->id;
@@ -172,27 +169,7 @@ class PedidoController
             $rta = "No hay pedidos en listos para servir en tu sector!";
             $response->withStatus(404);
         }
-        // $pedidosMismaComanda = Pedido_Comida::select("*")->where("idPedido", "=", $pedidoComida->idPedido)->get();
-
-        // $estado = 1;
-        // $aux = true;
-        // for ($i = 0; $i < count($pedidosMismaComanda) - 1; $i++) {
-        //     if ($i === 0) {
-        //         $estado = $pedidosMismaComanda[$i]->idEstado;
-        //     } else if ($estado !== $pedidosMismaComanda[$i]->idEstado) {
-        //         $aux = false;
-        //         break;
-        //     }
-        // }
-        // if ($aux) {
-        //     $pedido = Pedido::find($pedidoComida->idPedido);
-        //     $pedido->tiempoEstimadoPreparacion = rand(20, 45);
-        //     $pedido->idEstado = $pedidoComida->idEstado;
-        //     $pedido->save();
-        //     $rta = $rta . " El pedido " . $pedido->idPedido . " se encuentra en su totalidad en " . Estado_Pedido::find($pedido->idEstado)->estadoPedido;
-        // }
-
-        // $response->getBody()->write(json_encode($rta));
+      
         $response->getBody()->write(json_encode($rta));
         return $response;
     }
@@ -218,7 +195,7 @@ class PedidoController
                 $pedido->tiempoEstimadoPreparacion = rand(20, 45);
             }
             $pedido->save();
-            $rta = $rta . " El pedido " . $pedido->idPedido . " se encuentra en su totalidad en " . Estado_Pedido::find($pedido->idEstado)->estadoPedido;
+            $rta = $rta . " El pedido " . $pedido->idPedido . ". Estado: " . Estado_Pedido::find($pedido->idEstado)->estadoPedido;
         }
 
         $response->getBody()->write(json_encode($rta));
@@ -241,5 +218,6 @@ class PedidoController
 
     }
 }
+
 
 
